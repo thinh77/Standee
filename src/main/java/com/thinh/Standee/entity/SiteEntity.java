@@ -1,6 +1,6 @@
 package com.thinh.Standee.entity;
 
-import com.thinh.Standee.enums.RoleName;
+import com.thinh.Standee.enums.SiteName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,15 +13,16 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "role")
-public class RoleEntity {
+@Table(name = "site")
+public class SiteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Enumerated(EnumType.STRING)
-    private RoleName name;
+    private SiteName name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserEntity> users = new ArrayList<>();
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LocationEntity> locations = new ArrayList<>();
 }
+

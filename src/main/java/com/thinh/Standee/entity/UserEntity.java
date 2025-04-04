@@ -6,12 +6,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "users")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "user")
 public class UserEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,6 +29,13 @@ public class UserEntity extends BaseEntity {
     private String unit;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
     private RoleEntity role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<UserLocation> userLocations = new ArrayList<>();
+
+    public void addUserLocations(UserLocation userLocation) {
+        this.userLocations.add(userLocation);
+        userLocation.setUser(this);
+    }
 }
