@@ -11,6 +11,7 @@ import com.thinh.Standee.repository.UserRepository;
 import com.thinh.Standee.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public ApiResponse<?> getAllUsers() {
@@ -46,6 +48,18 @@ public class UserServiceImpl implements UserService {
                 .success(true)
                 .message("Create user successfully")
                 .data(userDto).timestamp(LocalDateTime.now()).build();
+    }
 
+    @Override
+    @Transactional
+    public ApiResponse<?> updateUser(String id, CreateUserRequest request) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userMapper.updateUserEntityFromRequest(request, userEntity);
+        UserDto userDto = userMapper.toDto(userEntity);
+        return ApiResponse.<UserDto>builder()
+                .success(true)
+                .message("Update user successfully")
+                .data(userDto).timestamp(LocalDateTime.now()).build();
     }
 }

@@ -41,10 +41,14 @@ public abstract class UserMapper {
     public abstract UserEntity toEntity(CreateUserRequest request);
 
     /**
-     * After mapping basic fields, this method populates the UserLocations list.
-     * It fetches LocationEntity objects based on IDs from the request,
-     * creates UserLocation join entities, and sets the bidirectional relationship.
+     * Custom mapping method to update UserEntity from CreateUserRequest.
+     * This method is used in the updateUser method of UserServiceImpl.
      */
+    @Mapping(target = "id", ignore = true) // ID should not be updated
+    @Mapping(target = "password", ignore = true) // Password should not be updated
+    @Mapping(target = "role", source = "role", qualifiedByName = "roleNameToRoleEntity") // Custom mapping for Role
+    @Mapping(target = "userLocations", ignore = true) // Handled in @AfterMapping
+    public abstract void updateUserEntityFromRequest(CreateUserRequest request, @MappingTarget UserEntity userEntity);
 
     @AfterMapping
     protected void mapUserLocations(CreateUserRequest request, @MappingTarget UserEntity userEntity) {
@@ -56,6 +60,8 @@ public abstract class UserMapper {
                 userLocation.setLocation(locationEntity);
                 userEntity.addUserLocations(userLocation);
             }
+        } else {
+            userEntity.getUserLocations().clear();
         }
     }
 
@@ -89,4 +95,5 @@ public abstract class UserMapper {
         // Fetch the RoleEntity - Add proper error handling as needed
         return roleRepository.findByName(RoleName.valueOf(roleName.name())).orElseThrow(() -> new RuntimeException("Role not found with name: " + roleName)); // Example error handling
     }
+
 }

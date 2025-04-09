@@ -26,4 +26,11 @@ public class UserController {
                 userService.createUser(request)
         );
     }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @Validated @RequestBody CreateUserRequest request) {
+        return ResponseEntity.ok().body(
+                userService.updateUser(id, request)
+        );
+    }
 }
